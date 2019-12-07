@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/liclac/eyesemoji/commands"
 	"github.com/liclac/eyesemoji/glowglasses"
 	"github.com/mattn/go-shellwords"
 	"github.com/muka/go-bluetooth/api"
@@ -101,14 +102,11 @@ func Eval(gg *glowglasses.GlowGlassesX, input string) error {
 	if err != nil {
 		return err
 	}
-	switch words[0] {
-	case "on":
-		return gg.On()
-	case "off":
-		return gg.Off()
-	default:
-		return errors.Errorf("unrecognised command: %s", words[0])
+	cmd, ok := commands.Commands[words[0]]
+	if !ok {
+		return errors.Errorf("unrecognised command, try 'help'")
 	}
+	return cmd.Fn(gg, words[1:])
 }
 
 func Main() error {
